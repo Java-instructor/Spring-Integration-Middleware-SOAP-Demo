@@ -1,0 +1,624 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.java.instructor</groupId>
+	<artifactId>Spring-Integration-Middleware-SOAP-Demo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Spring-Integration-Middleware-SOAP-Demo</name>
+
+	<url>http://www.springsource.org/spring-integration</url>
+
+	<prerequisites>
+		<maven>2.2.0</maven>
+	</prerequisites>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.integration.version>2.1.0.RELEASE</spring.integration.version>
+		<slf4j.version>1.6.4</slf4j.version>
+		 <junit.version>4.13.2</junit.version>  
+		 <junit.jupiter.version>5.8.1</junit.jupiter.version>
+		 <!-- <junit.platform.version>1.8.1</junit.platform.version> --> 
+	</properties>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.4.2</version>
+		<relativePath />
+	</parent>
+
+
+	<repositories>
+		<repository>
+			<id>repository.springframework.maven.release</id>
+			<name>Spring Framework Maven Release Repository</name>
+			<url>http://maven.springframework.org/release</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					 <execution>
+						<id>xjc</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+					</execution> 
+				</executions>
+				<configuration>
+					<xjbSources>
+						<xjbSource>src/main/resources/global.xjb</xjbSource>
+					</xjbSources>
+					<sources>
+						<source>src/main/resources/META-INF/Employee.xsd</source>
+						<source>src/main/resources/countries.xsd</source>
+					</sources>
+					<packageName>com.hexaware.jaxb.gen</packageName>
+					<outputDirectory>src/main/java</outputDirectory>
+					<clearOutputDir>false</clearOutputDir>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>org.springframework.ide.eclipse.core.springnature</projectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildcommand>org.springframework.ide.eclipse.core.springbuilder</buildcommand>
+					</additionalBuildcommands>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<compilerArgument>-Xlint:all</compilerArgument>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<configuration>
+					<mainClass>com.hexaware.spring.config.MainConfiguration</mainClass>
+				</configuration>
+			</plugin>
+
+                <!-- <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jaxws-maven-plugin</artifactId>
+                    <version>2.6</version>
+                    <executions>
+                         <execution>
+                            <id>wsimport-from-jdk</id>
+                            <goals>
+                                <goal>wsimport</goal>
+                            </goals>
+                        </execution> 
+                    </executions>
+                    <configuration>
+                        <wsdlUrls>
+                            <wsdlUrl>src/main/resources/countries.wsdl</wsdlUrl>
+                        </wsdlUrls>
+                        <keep>true</keep>
+                        <packageName>com.hexaware.amaze.soap.ws.client.generated</packageName>
+                        <sourceDestDir>src/test/java</sourceDestDir>
+                    </configuration>
+                </plugin> -->
+              
+                <plugin>
+			      <groupId>org.apache.axis2</groupId>
+			      <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+			      <executions>
+			        <execution>
+			          <goals>
+			            <goal>wsdl2code</goal>
+			          </goals>
+			          <phase>generate-sources</phase>
+			          <configuration>
+			          	<wsdlFile>src/main/resources/countries.wsdl</wsdlFile>
+			            <packageName>com.hexaware.amaze.soap.ws.client2.generated</packageName>
+			            <databindingName>xmlbeans</databindingName> 
+			            <generateTestcase>true</generateTestcase>
+			            <outputDirectory>src/test/java</outputDirectory> 
+			         	<flattenFiles>true</flattenFiles>
+                        <overWrite>true</overWrite>
+                        <suppressPrefixes>false</suppressPrefixes>
+                        <generateServerSide>false</generateServerSide>
+                        <generateServicesXml>true</generateServicesXml>
+                        <language>java</language> 
+                        	<!-- <excludeDefaultDirectories>true</excludeDefaultDirectories>
+			                <filesets>
+				                    <fileset>
+				                        <directory>src/test/java/schemaorg_apache_xmlbeans</directory>
+				                        <followSymlinks>false</followSymlinks>
+				                        <excludes>
+				                            <exclude>*</exclude>
+				                        </excludes>
+				                    </fileset>
+				                    <fileset>
+				                        <directory>src/test/java/schemaorg_apache_xmlbeans</directory>
+				                        <followSymlinks>false</followSymlinks>
+				                        <excludes>
+				                            <exclude>*</exclude>
+				                        </excludes>
+				                    </fileset>
+			                </filesets>
+			                <verbose>true</verbose> -->
+                
+			          </configuration>
+			        </execution>
+			      </executions>
+			    </plugin>
+            <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-antrun-plugin</artifactId>
+					<version>1.7</version>
+					<executions>
+					    <execution>
+					        <phase>test</phase>
+					        <goals>
+					            <goal>run</goal>
+					        </goals>
+					        <configuration>
+					            <tasks>
+					                <delete>
+					                  <!--   <fileset dir="src/test/java/" includes="*.xsb" /> -->
+					                </delete>
+					            </tasks>
+					        </configuration>
+					    </execution>
+					</executions>
+				</plugin>
+            <!--  <plugin>
+				    <groupId>org.codehaus.mojo</groupId>
+				    <artifactId>build-helper-maven-plugin</artifactId>
+				    <version>3.0.0</version>
+				    <executions>
+				        <execution>
+				            <id>add-integration-test-source</id>
+				            <phase>generate-test-sources</phase>
+				            <goals>
+				                <goal>add-test-source</goal>
+				            </goals>
+				            <configuration>
+				                <sources>
+				                    <source>src/test/java/generate/test</source>
+				                </sources>
+				            </configuration>
+				        </execution>
+				    </executions>
+			</plugin>   -->
+			
+	<!-- 		<plugin>
+        <groupId>org.apache.axis2</groupId>
+        <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <executions>
+            <execution>
+                <id>ws1</id>
+                <goals>
+                    <goal>wsdl2code</goal>
+                </goals>
+                <configuration>
+                   <unpackClasses>true</unpackClasses>
+                   <databindingName>adb</databindingName>
+                   <packageName>com.hexaware.amaze.soap.ws.client2.generated</packageName>
+                   <wsdlFile>src/main/resources/countries.wsdl</wsdlFile>
+                   <outputDirectory>src/test/java/generated-sources</outputDirectory>
+                   <syncMode>sync</syncMode>
+                </configuration>
+            </execution>
+            
+        </executions>
+    </plugin>
+			<plugin>
+				    <groupId>org.codehaus.mojo</groupId>
+				    <artifactId>build-helper-maven-plugin</artifactId>
+				    <version>3.0.0</version>
+				    <executions>
+				        <execution>
+				            <id>add-integration-test-source</id>
+				            <phase>generate-test-sources</phase>
+				            <goals>
+				                <goal>add-test-source</goal>
+				            </goals>
+				            <configuration>
+				                <sources>
+				                    <source>src/test/java/generated-sources/test</source>
+				                </sources>
+				            </configuration>
+				        </execution>
+				    </executions>
+			</plugin>  -->
+			<!-- <plugin>
+			    <groupId>org.apache.cxf</groupId>
+			    <artifactId>cxf-codegen-plugin</artifactId>
+			    <version>3.5.0</version>
+			    <executions>
+			        <execution>
+			            <id>generate-sources</id>
+			            <phase>generate-sources</phase>
+			            <configuration>
+			                <sourceRoot>src/main/resources</sourceRoot>
+			                <wsdlOptions>
+			                    <wsdlOption>
+			                        <wsdl>src/main/resources/countries.wsdl</wsdl>
+			                    </wsdlOption>
+			                </wsdlOptions>
+			            </configuration>
+			            <goals>
+			                <goal>wsdl2java</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>add-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>D:\AmazeProject\workspace\SOAPServiceSpringIntegration\src\main\java\com\hexaware\amaze\soap\ws\client\generated</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin> -->
+				<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M3</version>
+            </plugin>
+						
+ 	</plugins>
+	</build>
+
+	<dependencies>
+
+<!-- https://mvnrepository.com/artifact/org.apache.xmlbeans/xmlbeans -->
+<dependency>
+    <groupId>org.apache.xmlbeans</groupId>
+    <artifactId>xmlbeans</artifactId>
+    <version>5.0.3</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.axis2.wso2/axis2-client -->
+		<dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-transport-http</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>axiom-api</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>  
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>3.2.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-webflux</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-activemq</artifactId>
+		</dependency>
+		<!-- Spring Integration -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-integration</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-core</artifactId>
+
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-file</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-webflux</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-ftp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-ws</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-stream</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-event</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-amqp</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-http</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jms</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.integration</groupId>
+			<artifactId>spring-integration-jdbc</artifactId>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-module-kotlin</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.4.29.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<version>1.0.0.Final</version>
+			<!-- <scope>runtime</scope> -->
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-module-kotlin</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>2.4.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-launcher</artifactId>
+			<version>1.7.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>javax.jms-api</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>5.10.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+
+
+		 <dependency> <groupId>javax.servlet</groupId> <artifactId>servlet-api</artifactId> 
+			<version>2.5</version> </dependency> 
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>2.11.1</version>
+		</dependency>
+
+		<!-- Logging -->
+		<!-- <dependency> <groupId>ch.qos.logback</groupId> <artifactId>logback-classic</artifactId> 
+			<version>1.1.3</version> </dependency> <dependency> <groupId>org.slf4j</groupId> 
+			<artifactId>slf4j-api</artifactId> <version>${slf4j.version}</version> </dependency> -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.11</version>
+		</dependency>
+		<dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+		 <dependency>
+	        <groupId>org.junit.jupiter</groupId>
+	        <artifactId>junit-jupiter-params</artifactId>
+	        <version>${junit.jupiter.version}</version>
+	        <scope>test</scope>
+	    </dependency> 
+	    <!-- <dependency>
+	        <groupId>org.junit.platform</groupId>
+	        <artifactId>junit-platform-suite</artifactId>
+	        <version>${junit.platform.version}</version>
+	        <scope>test</scope>
+	    </dependency> -->
+		<!-- Other -->
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.200</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-module-kotlin</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.13.3</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-module-kotlin</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- <dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-module-kotlin</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>org.hamcrest</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>  -->
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>2.2</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-module-kotlin</artifactId>
+					<groupId>com.fasterxml.jackson.module</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+	</dependencies>
+
+
+</project>
